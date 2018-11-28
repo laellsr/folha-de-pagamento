@@ -1,2 +1,2 @@
-# folha-de-pagamento
-Projeto de Software
+# Payroll
+Second Software Project
