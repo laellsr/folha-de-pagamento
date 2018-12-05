@@ -369,6 +369,7 @@ public class Main
 						okay = input.nextLine();
 						break;
 					}
+					employees.get(index).setAgendaType();
 					break;
 			}
 			
