@@ -1,5 +1,6 @@
 package payrollSystem;
 
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class Employee
@@ -7,15 +8,23 @@ public class Employee
 	int id;
 	String name, address;
 	int type; /* (1) hourly (2) salaried (3) salaried and commissioned */
-	int salary; /* amount to be paid */
-	float commissionPercentage = 0; /* if he is salaried */
-	int syndicate=0;
-	int timeCard=0;
+	String typeName;
+	double salary; /* amount to be paid */
+	int paymentMethod=0; /* (1) post office (2) in cash (3) bank deposit */
+	String payment;
+	float commissionPercentage = 0; /* if he is salaried and commissioned */
+	int syndicateId=-1;
+	Timecard timecard = new Timecard();
+	double sales=0;
+	
+	ArrayList<Tax> taxes = new ArrayList<Tax>();
+	
+	int payday=-1, agendaType; /* day of payment, agenda type (1 per week, 2 per month, 3 bi-weekly)*/
 	
 	Scanner input = new Scanner( System.in );
 	public void setEmployee()
 	{
-		setName(); setAddress(); setType(); setSalary(); setSyndicate();
+		setName(); setAddress(); setType(); setSalary(); setPayment(); setAgendaType(); setSyndicate();
 	}
 	public void setId(int id)
 	{
@@ -48,6 +57,11 @@ public class Employee
 		System.out.printf("Digite o tipo de salario:\n"
 				+ "[1] Horista\n[2] Assalariado\n[3] Assalariado e Comissionado\n=> ");
 		type = input.nextInt(); input.nextLine();
+		if(type==1)
+			typeName = "Horista";
+		else if(type==2)
+			typeName = "Assalariado sem comissao";
+		typeName = "Assalariado e Comissionado";
 	}
 	public int getType()
 	{
@@ -55,15 +69,15 @@ public class Employee
 	}
 	public void setSalary()
 	{
-		System.out.printf("Digite o valor do salario:\n");
-		salary = input.nextInt(); input.nextLine();
+		System.out.printf("Digite o valor do salario (mensal/horista) [Ex.: 1280,31]:\n=> ");
+		salary = input.nextDouble(); input.nextLine();
 		
 		if(type==3)
 		{
 			setCommission();
 		}
 	}
-	public int getSalary()
+	public double getSalary()
 	{
 		return salary;
 	}
@@ -79,21 +93,37 @@ public class Employee
 	public void setSyndicate()
 	{
 		System.out.printf("Empregado pertence ao sindicato?\n[1] Sim [2] Nao\n=> ");
-		syndicate = input.nextInt(); input.nextLine();
-		if(syndicate!=1)
-			syndicate = 0;
+		syndicateId = input.nextInt(); input.nextLine();
+		if(syndicateId!=1)
+			syndicateId=-1;
 	}
 	public int getSyndicate()
 	{
-		return syndicate;
+		return syndicateId;
 	}
-	public void setTimecard()
+	public void setSales()
 	{
-		System.out.printf("Entrada dos cartões de ponto:\n=> ");
-		timeCard = input.nextInt(); input.nextLine();
+		double aux=0;
+		System.out.printf("Digite o valor da venda (ex.: 12,37)\n=> R$ ");
+		aux = input.nextDouble(); input.nextLine();
+		this.sales += aux;
+		System.out.printf("Venda adicionada ao empregado.\n[1] Continue:\n=> ");
+		input.nextLine();
 	}
-	public int getTimecard()
+	public void setPayment()
 	{
-		return timeCard;
+		System.out.printf("Metodo de pagamento:\n[1] Cheque pelos correios\n[2] Cheque em maos\n[3] Deposito em conta bancaria\n=> ");
+		paymentMethod = input.nextInt(); input.nextLine();
+		if(paymentMethod==1)
+			payment = "Cheque pelos correios";
+		else if(paymentMethod==2)
+			payment = "Cheque em maos";
+		payment = "Deposito em conta bancaria";
 	}
+	public void setAgendaType()
+	{
+		System.out.printf("Agenda de pagamento:\n[1] Semanal\n[2] Mensal\n[3] Bi-semanal\n");
+		agendaType = input.nextInt(); input.nextLine();
+	}
+
 }
