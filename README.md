@@ -1,5 +1,5 @@
 # Payroll System
 Second Software Project
 
-#Functions
+# Functions
 Manage employees: registration and payment
