@@ -13,8 +13,8 @@ public class Tax
 	{
 		System.out.printf("Digite o nome do servico:\n=> ");
 		name = input.nextLine();
-		System.out.printf("Digite o valor da taxa:\n=> ");
-		taxValue = input.nextDouble();
+		System.out.printf("Digite o valor da taxa (ex.: 23,45):\n=> R$ ");
+		taxValue = input.nextDouble(); input.nextLine();
 		System.out.printf("Taxa adicionada.\n[1] Continue\n=> ");
 		input.nextLine();
 	}

@@ -13,7 +13,7 @@ public class Employee
 	int paymentMethod=0; /* (1) post office (2) in cash (3) bank deposit */
 	String payment;
 	float commissionPercentage = 0; /* if he is salaried and commissioned */
-	int syndicateId=-1;
+	int syndicateId=-1; double syndicateTax=0;
 	Timecard timecard = new Timecard();
 	double sales=0;
 	
@@ -69,7 +69,7 @@ public class Employee
 	}
 	public void setSalary()
 	{
-		System.out.printf("Digite o valor do salario (mensal/horista) [Ex.: 1280,31]:\n=> ");
+		System.out.printf("Digite o valor do salario (mensal/horista) [Ex.: 1280,31]:\n=> R$ ");
 		salary = input.nextDouble(); input.nextLine();
 		
 		if(type==3)
@@ -83,7 +83,7 @@ public class Employee
 	}
 	public void setCommission()
 	{
-		System.out.printf("Digite o valor da porcentagem de comissão por vendas:\n[Exemplo: 1,32]\n");
+		System.out.printf("Digite o valor da porcentagem de comissao por vendas:\n[Exemplo: 1,32]\n");
 		commissionPercentage = input.nextFloat(); input.nextLine();
 	}
 	public float getCommission()
@@ -96,6 +96,8 @@ public class Employee
 		syndicateId = input.nextInt(); input.nextLine();
 		if(syndicateId!=1)
 			syndicateId=-1;
+		else
+			setSyndicateTax();
 	}
 	public int getSyndicate()
 	{
@@ -124,6 +126,15 @@ public class Employee
 	{
 		System.out.printf("Agenda de pagamento:\n[1] Semanal\n[2] Mensal\n[3] Bi-semanal\n");
 		agendaType = input.nextInt(); input.nextLine();
+	}
+	public void setSyndicateTax()
+	{
+		System.out.printf("Digite a taxa basica do Sindicato (Ex.: 123,45):\n=> R$ ");
+		syndicateTax = input.nextDouble(); input.nextLine();
+	}
+	public void setSyndicateId(int sId)
+	{
+		this.syndicateId = sId;
 	}
 
 }

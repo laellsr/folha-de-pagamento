@@ -22,15 +22,15 @@ public class Main
 					+ "Hoje: %d/%d/%d\n\n" +
 					"[1] adicionar um empregado\n" +
 					"[2] remover um empregado\n" +
-					"[3] lançar um cartao de ponto\n" +
-					"[4] lançar um resultado venda\n" +
-					"[5] lançar uma taxa de serviço\n" +
+					"[3] lancar um cartao de ponto\n" +
+					"[4] lancar um resultado venda\n" +
+					"[5] lancar uma taxa de servico\n" +
 					"[6] alterar detalhes de um empregado\n" +
 					"[7] rodar a folha de pagamento para hoje\n" +
 					"[8] desfazer ou refazer uma opcao\n" +
 					"[9] nova agenda de pagamento\n" +
 					"[0] terminar o programa\n", today.get(Calendar.DAY_OF_MONTH), today.get(Calendar.MONTH), today.get(Calendar.YEAR));
-			System.out.printf("Insira o valor da opção desejada:\n=> ");
+			System.out.printf("Insira o valor da opcao desejada:\n=> ");
 			
 			decision = input.nextInt(); input.nextLine();
 			
@@ -47,9 +47,9 @@ public class Main
 					Employee newEmployee = new Employee();
 					newEmployee.setId(id);
 					newEmployee.setEmployee();
-					if(newEmployee.getSyndicate()>1)
+					if(newEmployee.getSyndicate()==1)
 					{
-						syndicateId++; newEmployee.syndicateId=syndicateId;
+						syndicateId++; newEmployee.setSyndicateId(syndicateId);
 					}
 					employees.add(newEmployee);
 					System.out.printf("\nEmpregado adicionado!\nID: %s. Nome: %s.\n", newEmployee.id, newEmployee.name);
@@ -74,7 +74,7 @@ public class Main
 					System.out.printf("Empregado removido do sistema.\n[1] Continue:\n=> ");
 					input.nextLine();
 					break;
-				case 3: /* lançar um cartao de ponto */
+				case 3: /* lancar um cartao de ponto */
 					showEmployee(employees);
 					System.out.printf("Digite a ID do empregado:\n=> ");
 					aux = input.nextInt(); input.nextLine();
@@ -90,7 +90,7 @@ public class Main
 					System.out.printf("\nAdicionado!\n[1] Continue:\n=> ");
 					okay = input.nextLine();
 					break;
-				case 4: /* lançar um resultado venda */
+				case 4: /* lancar um resultado venda */
 					showEmployee(employees);
 					System.out.printf("Digite a ID do empregado:\n=> ");
 					aux = input.nextInt(); input.nextLine();
@@ -103,7 +103,7 @@ public class Main
 					}
 					employees.get(index).setSales();
 					break;
-				case 5: /* lançar uma taxa de serviço */
+				case 5: /* lancar uma taxa de serviï¿½o */
 					showSyndicate(employees);
 					System.out.printf("Digite a ID de Sindicato do empregado:\n=> ");
 					aux = input.nextInt(); input.nextLine();
@@ -195,14 +195,50 @@ public class Main
 									}
 								}
 						
-						case 7: /*  */
+						case 7: /* adicionar taxas de servicos */
+							if(employees.get(index).syndicateId<0)
+							{
+								System.out.printf("Empregado nao pertece ao Sindicato.\n[1] Continue\n=> ");
+								input.nextLine();
+								break;
+							}
 							for(int i=0; i < employees.get(index).taxes.size(); i++)
-								System.out.printf("[%s] Nome: %s. Valor: %s.\n", i, employees.get(index).taxes.get(i).name, employees.get(index).taxes.get(i).taxValue);
-							System.out.printf("Digite a opcao:\n=> ");
+								System.out.printf("Numero de Lista: (%s) - Nome: %s. Valor: R$ %s.\n", i, employees.get(index).taxes.get(i).name, employees.get(index).taxes.get(i).taxValue);
+							System.out.printf("[1] Adicionar taxa\n[2] Editar Taxa\n[3] Remover taxa\n[4] Voltar\n=> ");
 							int decisionAux = input.nextInt(); input.nextLine();
-							for(int i=0; i < employees.get(index).taxes.size(); i++)
-								if(decisionAux == i)
-									employees.get(index).taxes.get(i).setTax();
+							int auxInt;
+							switch(decisionAux)
+							{
+								case 1:
+									Tax newTax = new Tax();
+									newTax.setTax();
+									employees.get(index).taxes.add(newTax);
+									break;
+								case 2:
+									if(employees.get(index).taxes.size()==0)
+									{
+										System.out.printf("Sem taxas.\n[1] Continue\n=> ");
+										input.nextLine();
+										break;
+									}
+									System.out.printf("Digite o numero de lista da taxa\n=> ");
+									auxInt = input.nextInt(); input.nextLine();
+									employees.get(index).taxes.get(auxInt).setTax();
+									break;
+								case 3:
+									if(employees.get(index).taxes.size()==0)
+									{
+										System.out.printf("Sem taxas.\n[1] Continue\n=> ");
+										input.nextLine();
+										break;
+									}
+									System.out.printf("Digite o numero de lista da taxa\n=> ");
+									auxInt = input.nextInt(); input.nextLine();
+									employees.get(index).taxes.remove(auxInt);
+									System.out.printf("Taxa removida\n[1] Continue\n=> ");
+									input.nextLine();
+									break;					
+							}					
 							break;
 						case 8: /*  */
 							case6b = false;
@@ -217,25 +253,104 @@ public class Main
 					for(int i=0; i < employees.size(); i++)
 					{
 						subtotal=0; taxes=0; less=0;
-						if(employees.get(i).agendaType==1)
+						if(employees.get(i).type==1 && ((employees.get(i).agendaType==1 && employees.get(i).timecard.workedDays >= 7)
+								|| (employees.get(i).agendaType==2 && employees.get(i).timecard.workedDays >= 30)
+								|| (employees.get(i).agendaType==3 && employees.get(i).timecard.workedDays >= 14)))
 						{
-							if(employees.get(i).timecard.workedDays >= 7)
+							
+							System.out.printf("Folha de pagamento:\n");
+							System.out.printf("ID do empregado: %s.\nNome: %s.\n", employees.get(i).id, employees.get(i).name);
+							if(employees.get(i).syndicateId>0)
+								System.out.printf("ID de Sindicato: %s\n", employees.get(i).syndicateId);
+							
+							System.out.printf("Valor por hora trabalhada: R$ %.2f\n", employees.get(i).salary);
+							System.out.printf("Horas trabalhadas: %.2f\n", employees.get(i).timecard.workedHours);
+							subtotal += employees.get(i).timecard.workedHours*employees.get(i).salary;
+							System.out.printf("Subtotal de horas: R$ %.2f\n", subtotal);
+							System.out.printf("Horas extras: %.2f\n", employees.get(i).timecard.workedExtraHours);
+							System.out.printf("Subtotal de horas extras: R$ %.2f\n", employees.get(i).timecard.workedExtraHours*(employees.get(i).salary*1.5));
+							subtotal += employees.get(i).timecard.workedExtraHours*(employees.get(i).salary*1.5);
+							System.out.printf("Total Bruto: R$ %.2f\n", subtotal);
+							if(employees.get(i).syndicateId>0)
 							{
-								System.out.printf("Folha de pagamento:\n");
-								System.out.printf("ID do empregado: %s. Nome: %s.\n", employees.get(i).id, employees.get(i).name);
-								if(employees.get(i).syndicateId>0)
-									System.out.printf("ID de Sindicato: %s\n", employees.get(i).syndicateId);
-								if(employees.get(i).paymentMethod==1)
-								{
-									System.out.printf("Valor por hora trabalhada: R$ %s\n", employees.get(i).salary);
-									System.out.printf("Quantidade de horas trabalhadas: %s\n", employees.get(i).timecard.workedHours);
-									subtotal += employees.get(i).timecard.workedHours*employees.get(i).salary;
-									System.out.printf("Subtotal 1: R$ %.2f\n", subtotal);
-					
-								}
-								System.out.printf("Total de vendas: R$ %.2f.\n", employees.get(i).sales);
-								System.out.printf("\n");
+								System.out.printf("Descontos do Sindicato:\nTaxa basica: R$ %.2f\n", employees.get(i).syndicateTax);
+								taxes += employees.get(i).syndicateTax;
 							}
+							for(int j=0; j < employees.get(i).taxes.size(); j++)
+							{
+								System.out.printf("Servico de %s: R$ %.2f\n", employees.get(i).taxes.get(j).name, employees.get(i).taxes.get(j).taxValue);
+								taxes += employees.get(i).taxes.get(j).taxValue;
+							}
+							System.out.printf("Total Liquido: R$ %.2f\n", subtotal-taxes);
+							
+							System.out.printf("\n");
+							
+							employees.get(i).timecard.workedHours = 0;
+							employees.get(i).timecard.workedExtraHours = 0;
+							employees.get(i).sales = 0;
+							
+							if(employees.get(i).agendaType==1)
+								employees.get(i).timecard.workedDays -= 7;
+							else if(employees.get(i).agendaType==2)
+								employees.get(i).timecard.workedDays -= 30;
+							else if(employees.get(i).agendaType==3)
+								employees.get(i).timecard.workedDays -= 14;
+						}
+						if(employees.get(i).type==2 && ((employees.get(i).agendaType==1 && employees.get(i).timecard.workedDays >= 7)
+								|| (employees.get(i).agendaType==2 && employees.get(i).timecard.workedDays >= 30)
+								|| (employees.get(i).agendaType==3 && employees.get(i).timecard.workedDays >= 14)))
+						{
+							System.out.printf("Folha de pagamento:\n");
+							System.out.printf("ID do empregado: %s.\nNome: %s.\n", employees.get(i).id, employees.get(i).name);
+							if(employees.get(i).syndicateId>0)
+								System.out.printf("ID de Sindicato: %s\n", employees.get(i).syndicateId);
+							
+							System.out.printf("Salario mensal: R$ %.2f\n", employees.get(i).salary);
+							subtotal += employees.get(i).salary;
+							System.out.printf("Total Bruto: R$ %.2f\n", subtotal);
+							if(employees.get(i).syndicateId>0)
+							{
+								System.out.printf("Descontos do Sindicato:\nTaxa basica: R$ %.2f\n", employees.get(i).syndicateTax);
+								taxes += employees.get(i).syndicateTax;
+							}
+							for(int j=0; j < employees.get(i).taxes.size(); j++)
+							{
+								System.out.printf("Servico de %s: R$ %.2f\n", employees.get(i).taxes.get(j).name, employees.get(i).taxes.get(j).taxValue);
+								taxes += employees.get(i).taxes.get(j).taxValue;
+							}
+							System.out.printf("Total Liquido: R$ %.2f\n", subtotal-taxes);
+							
+							System.out.printf("\n");
+						}
+						if(employees.get(i).type==3 && ((employees.get(i).agendaType==1 && employees.get(i).timecard.workedDays >= 7)
+								|| (employees.get(i).agendaType==2 && employees.get(i).timecard.workedDays >= 30)
+								|| (employees.get(i).agendaType==3 && employees.get(i).timecard.workedDays >= 14)))
+						{
+							System.out.printf("Folha de pagamento:\n");
+							System.out.printf("ID do empregado: %s.\nNome: %s.\n", employees.get(i).id, employees.get(i).name);
+							if(employees.get(i).syndicateId>0)
+								System.out.printf("ID de Sindicato: %s\n", employees.get(i).syndicateId);
+							
+							System.out.printf("Salario mensal: R$ %.2f\n", employees.get(i).salary);
+							subtotal += employees.get(i).salary;
+							System.out.printf("Total de vendas: R$ %.2f\n", employees.get(i).sales);
+							System.out.printf("Porcentagem por vendas: %.2f%\n", employees.get(i).commissionPercentage);
+							System.out.printf("Subtotal: R$ %.2f\n", employees.get(i).commissionPercentage*employees.get(i).sales);
+							subtotal += employees.get(i).commissionPercentage*employees.get(i).sales;
+							System.out.printf("Total Bruto: R$ %.2f\n", subtotal);
+							if(employees.get(i).syndicateId>0)
+							{
+								System.out.printf("Descontos do Sindicato:\nTaxa basica: R$ %.2f\n", employees.get(i).syndicateTax);
+								taxes += employees.get(i).syndicateTax;
+							}
+							for(int j=0; j < employees.get(i).taxes.size(); j++)
+							{
+								System.out.printf("Servico de %s: R$ %.2f\n", employees.get(i).taxes.get(j).name, employees.get(i).taxes.get(j).taxValue);
+								taxes += employees.get(i).taxes.get(j).taxValue;
+							}
+							System.out.printf("Total Liquido: R$ %.2f\n", subtotal-taxes);
+							
+							System.out.printf("\n");
 						}
 					}
 	
